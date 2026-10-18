@@ -1,0 +1,210 @@
+[
+  {
+    "name": "Moong Dal Chilla",
+    "tags": ["healthy", "protein", "breakfast", "easy"],
+    "ingredients": [
+      "1 cup soaked moong dal",
+      "Salt",
+      "Green chilli",
+      "Oil"
+    ],
+    "steps": [
+      "Grind dal into batter.",
+      "Add salt and chilli.",
+      "Pour batter on pan.",
+      "Cook both sides."
+    ],
+    "calories": 150
+  },
+
+  {
+    "name": "Vegetable Upma",
+    "tags": ["healthy", "vegetarian", "breakfast"],
+    "ingredients": [
+      "1 cup rava",
+      "Vegetables",
+      "Mustard seeds"
+    ],
+    "steps": [
+      "Roast rava.",
+      "Cook vegetables.",
+      "Add water and cook."
+    ],
+    "calories": 220
+  },
+
+  {
+    "name": "Oats Khichdi",
+    "tags": ["healthy", "diet", "weight loss"],
+    "ingredients": [
+      "1 cup oats",
+      "Vegetables"
+    ],
+    "steps": [
+      "Cook vegetables.",
+      "Add oats and cook."
+    ],
+    "calories": 180
+  },
+  {
+    "name": "Paneer Tikka Salad",
+    "tags": ["protein", "keto", "vegetarian", "low carb"],
+    "ingredients": [
+      "200g Paneer cubes",
+      "Bell peppers",
+      "Yogurt",
+      "Tikka masala"
+    ],
+    "steps": [
+      "Marinate paneer and peppers in yogurt and spices.",
+      "Grill or sauté until golden brown.",
+      "Toss with fresh lemon juice."
+    ],
+    "calories": 250
+  },
+  {
+    "name": "Quinoa Upma",
+    "tags": ["superfood", "breakfast", "gluten-free", "fiber"],
+    "ingredients": [
+      "1 cup Quinoa",
+      "Mixed vegetables (peas, carrots)",
+      "Mustard seeds",
+      "Curry leaves"
+    ],
+    "steps": [
+      "Rinse quinoa thoroughly.",
+      "Sauté mustard seeds and vegetables.",
+      "Add quinoa and 2 cups water, simmer until fluffy."
+    ],
+    "calories": 210
+  },
+  {
+    "name": "Masala Sprouts",
+    "tags": ["vegan", "protein", "snacks", "weight loss"],
+    "ingredients": [
+      "2 cups Moong sprouts",
+      "Onion and tomato (finely chopped)",
+      "Chaat masala",
+      "Lemon juice"
+    ],
+    "steps": [
+      "Steam the sprouts for 5 minutes.",
+      "Mix with chopped onions and tomatoes.",
+      "Season with chaat masala and lemon."
+    ],
+    "calories": 140
+  },
+  {
+    "name": "Chia Seed Pudding",
+    "tags": ["breakfast", "no-cook", "omega-3", "sweet"],
+    "ingredients": [
+      "3 tbsp Chia seeds",
+      "1 cup Almond milk",
+      "1 tsp Honey",
+      "Fresh berries"
+    ],
+    "steps": [
+      "Mix chia seeds, milk, and honey in a jar.",
+      "Refrigerate overnight.",
+      "Top with berries before serving."
+    ],
+    "calories": 190
+  },
+  {
+    "name": "Egg White Omelet",
+    "tags": ["high protein", "low fat", "breakfast"],
+    "ingredients": [
+      "3 Egg whites",
+      "Spinach",
+      "Green chili",
+      "Black pepper"
+    ],
+    "steps": [
+      "Whisk egg whites with pepper.",
+      "Sauté spinach in a non-stick pan.",
+      "Pour eggs over spinach and cook until set."
+    ],
+    "calories": 120
+  },
+  {
+    "name": "Chickpea (Chana) Salad",
+    "tags": ["vegan", "lunch", "fiber", "filling"],
+    "ingredients": [
+      "1 cup Boiled chickpeas",
+      "Cucumber",
+      "Parsley",
+      "Olive oil dressing"
+    ],
+    "steps": [
+      "Combine chickpeas and diced cucumber.",
+      "Add chopped parsley.",
+      "Drizzle with olive oil and salt."
+    ],
+    "calories": 260
+  },
+  {
+    "name": "Baked Sweet Potato",
+    "tags": ["clean eating", "carbs", "side dish"],
+    "ingredients": [
+      "1 Medium sweet potato",
+      "Cinnamon",
+      "Greek yogurt (optional)"
+    ],
+    "steps": [
+      "Prick potato with a fork.",
+      "Bake at 200°C for 45 minutes.",
+      "Slice open and sprinkle with cinnamon."
+    ],
+    "calories": 110
+  },
+  {
+    "name": "Lentil Soup (Dal Tadka)",
+    "tags": ["comfort food", "protein", "vegan-friendly"],
+    "ingredients": [
+      "1 cup Yellow lentils",
+      "Turmeric",
+      "Garlic",
+      "Cumin seeds"
+    ],
+    "steps": [
+      "Boil lentils with turmeric until soft.",
+      "Prepare a tempering with cumin and garlic.",
+      "Mix into the dal and serve warm."
+    ],
+    "calories": 180
+  },
+  {
+    "name": "Stir-fried Tofu & Broccoli",
+    "tags": ["vegan", "keto", "dinner", "low carb"],
+    "ingredients": [
+      "150g Firm tofu",
+      "2 cups Broccoli florets",
+      "Soy sauce",
+      "Ginger"
+    ],
+    "steps": [
+      "Press tofu to remove water and cube it.",
+      "Stir-fry tofu until crisp.",
+      "Add broccoli and soy sauce, toss for 3 minutes."
+    ],
+    "calories": 220
+  },
+  {
+    "name": "Banana Oat Pancakes",
+    "tags": ["sugar-free", "breakfast", "kids-friendly"],
+    "ingredients": [
+      "1 Ripe banana",
+      "1/2 cup Rolled oats",
+      "1 Egg",
+      "Cinnamon"
+    ],
+    "steps": [
+      "Blend all ingredients into a smooth batter.",
+      "Pour small circles onto a hot pan.",
+      "Flip when bubbles appear."
+    ],
+    "calories": 240
+  }
+  
+
+]

@@ -1,0 +1,6 @@
+ai_model/rnn_env/
+**/rnn_env/
+node_modules/
+**/node_modules/
+*.pyd
+*.dll

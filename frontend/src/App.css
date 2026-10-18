@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+  --primary: #ff6b35;
+  --glass: rgba(255, 255, 255, 0.85);
+  --dark: #1a1a1a;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  color: var(--dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-viewport {
+  min-height: 100vh;
+  /* High-quality culinary background */
+  background: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=2070') no-repeat center center fixed;
+  background-size: cover;
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 100%);
+  z-index: 1;
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Header Styling */
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 50px;
+}
+
+.logo {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: var(--primary);
+}
+
+.subtitle {
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+/* Search Bar Styling */
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 60px;
+}
+
+.search-box {
+  display: flex;
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  padding: 8px;
+  border-radius: 50px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 20px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.voice-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 0 15px;
+  transition: color 0.3s;
+}
+
+.voice-btn:hover {
+  color: var(--primary);
+}
+
+.search-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.search-btn:hover {
+  transform: scale(1.03);
+  background: #e85a2a;
+}
+
+/* Recipe Cards */
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+.recipe-card {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  height: fit-content;
+}
+
+.recipe-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-header h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.4rem;
+  color: #222;
+}
+
+.calorie-badge {
+  background: rgba(255, 107, 53, 0.1);
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tag-container {
+  margin: 15px 0;
+}
+
+.tag {
+  font-size: 0.75rem;
+  color: #777;
+  margin-right: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-content h3 {
+  font-size: 1rem;
+  margin-top: 20px;
+  color: #444;
+}
+
+.ing-list {
+  padding-left: 18px;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.preview-text {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
+.expand-toggle {
+  background: transparent;
+  border: 1.5px solid var(--primary);
+  color: var(--primary);
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  margin-top: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.expand-toggle:hover {
+  background: var(--primary);
+  color: white;
+}
+.filter-open-btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.filter-popup {
+  position: fixed;
+  top: 30%;
+  left: 40%;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.filter-popup {
+  position: fixed;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  z-index: 999;
+  width: 320px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.filter-popup h2 {
+  margin-bottom: 15px;
+}
+
+.filter-popup label {
+  display: block;
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.more-btn,
+.apply-btn,
+.cancel-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.apply-btn {
+  background: orange;
+  color: white;
+}
+
+.cancel-btn {
+  background: #ddd;
+}
+
+.more-btn {
+  background: #222;
+  color: white;
+}
