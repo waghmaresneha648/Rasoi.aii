@@ -1,3 +1,4 @@
+import Chatbot from "./components/Chatbot";
 import React, { useState } from "react";
 import searchRecipes from "./aiSearch";
 import "./App.css";
@@ -911,7 +912,7 @@ function App() {
         )}
 
       </div>
-
+    <Chatbot />
     </div>
 
   );
