@@ -1,922 +1,795 @@
-import Chatbot from "./components/Chatbot";
+
 import React, { useState } from "react";
+import Chatbot from "./components/Chatbot";
 import searchRecipes from "./aiSearch";
 import "./App.css";
 
 function App() {
-
-  // 🔐 AUTH
+  // Authentication
   const [isLogin, setIsLogin] = useState(true);
 
   const userId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
 
-  // 📦 STATES
+  // UI states
   const [showForm, setShowForm] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
+
+  // Recipe form states
   const [title, setTitle] = useState("");
   const [keyword, setKeyword] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [instructions, setInstructions] = useState("");
 
+  // Search states
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
-  // ✅ FILTER STATES
-  const [showFilter, setShowFilter] = useState(false);
-
- 
-
-  // 🔐 LOGIN
+  // Login
   const handleLogin = async () => {
-
-    const email =
-      document.getElementById("loginEmail").value;
-
-    const password =
-      document.getElementById("loginPassword").value;
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
 
     try {
-
-      const res = await fetch(
-        "http://localhost:5000/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email,
-            password
-          })
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
 
       const data = await res.json();
 
       if (data.userId) {
+        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("userName", data.userName);
 
-        localStorage.setItem(
-          "userId",
-          data.userId
-        );
-
-        localStorage.setItem(
-          "userName",
-          data.userName
-        );
-
-        alert("Login successful ✅");
-
+        alert("Login successful!");
         window.location.reload();
-
       } else {
+        alert(data.message || "Invalid login details");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Login error. Please try again.");
+    }
+  };
 
-        alert(data.message);
+  // Signup
+  const handleSignup = async () => {
+    const name = document.getElementById("signupName").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
 
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Signup failed");
+        return;
       }
 
-    } catch (err) {
-
-      console.error(err);
-      alert("Login error");
-
-    }
-
-  };
-
-  // 📝 SIGNUP
-  const handleSignup = async () => {
-
-    const name =
-      document.getElementById("signupName").value;
-
-    const email =
-      document.getElementById("signupEmail").value;
-
-    const password =
-      document.getElementById("signupPassword").value;
-
-    try {
-
-      await fetch(
-        "http://localhost:5000/api/auth/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            password
-          })
-        }
-      );
-
-      alert("Signup successful 🎉");
-
+      alert("Signup successful! Please log in.");
       setIsLogin(true);
-
     } catch (err) {
-
       console.error(err);
-      alert("Signup error");
-
+      alert("Signup error. Please try again.");
     }
-
   };
 
-  // 🔍 SEARCH
-  const handleSearch = async () => {
+  // Recipe search
+  const handleSearch = async (searchText = query) => {
+    const searchTerm = searchText.trim();
 
     try {
+      const aiResults = searchRecipes(searchTerm);
 
-      const aiResults =
-        searchRecipes(query);
-
-      const response =
-        await fetch(
-          `http://localhost:5000/api/recipes/search/${query}`
-        );
-
-      const dbData =
-        await response.json();
-
-      const dbResults = dbData.map((r) => ({
-
-  name: r.title,
-
-  calories: "Custom",
-
-  // ✅ split multiple keywords
-  tags: r.keyword
-    ? r.keyword.split(",").map(tag => tag.trim().toLowerCase())
-    : [],
-
-  ingredients: r.ingredients.split(","),
-
-  steps: r.instructions.split("\n")
-
-}));
-
-
-      setResults([
-        ...aiResults,
-        ...dbResults
-      ]);
-
-    } catch (err) {
-
-      console.error(err);
-
-      alert(
-        "Error fetching recipes"
+      const response = await fetch(
+        `http://localhost:5000/api/recipes/search/${encodeURIComponent(searchTerm)}`
       );
 
-    }
+      if (!response.ok) {
+        throw new Error("Unable to fetch recipes");
+      }
 
+      const dbData = await response.json();
+
+      const dbResults = dbData.map((recipe) => ({
+        name: recipe.title,
+        calories: "Custom",
+        tags: recipe.keyword
+          ? recipe.keyword.split(",").map((tag) => tag.trim().toLowerCase())
+          : [],
+        ingredients: recipe.ingredients
+          ? recipe.ingredients.split(",")
+          : [],
+        steps: recipe.instructions
+          ? recipe.instructions.split("\n")
+          : []
+      }));
+
+      setResults([...aiResults, ...dbResults]);
+      setExpandedIndex(null);
+    } catch (err) {
+      console.error(err);
+      alert("Error fetching recipes. Please try again.");
+    }
   };
 
-  // 🎤 VOICE
+  // Voice search
   const startVoice = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    const recognition =
-      new (
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition
-      )();
+    if (!SpeechRecognition) {
+      alert("Voice search is not supported in this browser.");
+      return;
+    }
 
+    const recognition = new SpeechRecognition();
     recognition.lang = "en-IN";
 
-    recognition.onresult =
-      (event) => {
+    recognition.onresult = (event) => {
+      const voiceText = event.results[0][0].transcript;
+      setQuery(voiceText);
+      handleSearch(voiceText);
+    };
 
-        const voiceText =
-          event.results[0][0]
-            .transcript;
-
-        setQuery(voiceText);
-
-        setTimeout(() => {
-
-          handleSearch();
-
-        }, 500);
-
-      };
+    recognition.onerror = (event) => {
+      console.error("Voice search error:", event.error);
+      alert("Could not recognize your voice. Please try again.");
+    };
 
     recognition.start();
-
   };
 
-  // ➕ ADD RECIPE
+  // Add recipe
   const addRecipe = async () => {
+    if (!title.trim() || !ingredients.trim() || !instructions.trim()) {
+      alert("Please fill in the recipe title, ingredients and instructions.");
+      return;
+    }
 
     try {
+      const response = await fetch("http://localhost:5000/api/recipes/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title,
+          keyword,
+          ingredients,
+          instructions
+        })
+      });
 
-      const response =
-        await fetch(
-          "http://localhost:5000/api/recipes/add",
-          {
-            method: "POST",
+      const data = await response.json();
 
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
+      if (!response.ok) {
+        alert(data.message || "Could not add recipe.");
+        return;
+      }
 
-            body: JSON.stringify({
-
-               
-
-              title,
-              keyword,
-              ingredients,
-              instructions
-
-            })
-          }
-        );
-
-      const data =
-        await response.json();
-
-      alert(data.message);
+      alert(data.message || "Recipe added successfully!");
 
       setShowForm(false);
-
       setTitle("");
       setKeyword("");
       setIngredients("");
       setInstructions("");
-
     } catch (err) {
-
       console.error(err);
-
-      alert(
-        "Error adding recipe"
-      );
-
+      alert("Error adding recipe. Please try again.");
     }
-
   };
 
-  // ✅ CHECKBOX HANDLE
+  // Filter selection
   const handleCheckboxChange = (value) => {
-
-    if (
-      selectedFilters.includes(value)
-    ) {
-
-      setSelectedFilters(
-        selectedFilters.filter(
-          (item) =>
-            item !== value
-        )
-      );
-
-    } else {
-
-      setSelectedFilters([
-        ...selectedFilters,
-        value
-      ]);
-
-    }
-
+    setSelectedFilters((previous) =>
+      previous.includes(value)
+        ? previous.filter((item) => item !== value)
+        : [...previous, value]
+    );
   };
 
-  // ✅ APPLY FILTER
+  // Apply filters
   const applyFilter = async () => {
+    try {
+      let allRecipes = [];
 
-  try {
+      if (query.trim() === "") {
+        const response = await fetch(
+          "http://localhost:5000/api/recipes/all"
+        );
 
-    // ✅ if no search text
-    let allRecipes = [];
+        if (!response.ok) {
+          throw new Error("Unable to fetch recipes");
+        }
 
-    if (query.trim() === "") {
+        const dbData = await response.json();
 
-      // fetch all DB recipes
-      const response = await fetch(
-        "http://localhost:5000/api/recipes/all"
+        const dbResults = dbData.map((recipe) => ({
+          name: recipe.title,
+          calories: "Custom",
+          tags: recipe.keyword
+            ? recipe.keyword.split(",").map((tag) => tag.trim().toLowerCase())
+            : [],
+          ingredients: recipe.ingredients
+            ? recipe.ingredients.split(",")
+            : [],
+          steps: recipe.instructions
+            ? recipe.instructions.split(".")
+            : []
+        }));
+
+        allRecipes = [...searchRecipes(""), ...dbResults];
+      } else {
+        allRecipes = results;
+      }
+
+      const filtered = allRecipes.filter((recipe) =>
+        selectedFilters.some((filter) =>
+          recipe.tags?.includes(filter.toLowerCase())
+        )
       );
 
-      const dbData = await response.json();
-
-      const dbResults = dbData.map((r) => ({
-
-        name: r.title,
-
-        calories: "Custom",
-
-        tags: r.keyword
-          ? r.keyword.split(",").map(tag =>
-              tag.trim().toLowerCase()
-            )
-          : [],
-
-        ingredients: r.ingredients.split(","),
-
-        steps: r.instructions.split(".")
-
-      }));
-
-      allRecipes = [
-        ...searchRecipes(""),
-        ...dbResults
-      ];
-
-    } else {
-
-      allRecipes = results;
-
+      setResults(filtered);
+      setExpandedIndex(null);
+      setShowFilter(false);
+    } catch (err) {
+      console.error(err);
+      alert("Filter error. Please try again.");
     }
-
-    const filtered = allRecipes.filter(recipe =>
-
-      selectedFilters.some(filter =>
-
-        recipe.tags?.includes(
-          filter.toLowerCase()
-        )
-
-      )
-
-    );
-
-    setResults(filtered);
-
-    setShowFilter(false);
-
-  } catch (err) {
-
-    console.error(err);
-
-    alert("Filter error");
-
-  }
-
-};
-      
-
-  // 🔓 LOGOUT
-  const logout = () => {
-
-    localStorage.clear();
-
-    window.location.reload();
-
   };
 
-  // 🔐 LOGIN SCREEN
+  // Logout
+  const logout = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
+  // Login and signup screen
   if (!userId) {
-
     return (
-
       <div className="auth-container">
+        <div className="auth-brand-panel">
+          <div className="auth-brand-content">
+            <div className="brand-mark">N.</div>
 
-        <h1>
-          Rasoi.ai 🍲
-        </h1>
+            <h1 className="brand-name">
+              NutriWise<span>.ai</span>
+            </h1>
 
-        {isLogin ? (
-
-          <>
-
-            <h2>
-              Login
-            </h2>
-
-            <input
-              id="loginEmail"
-              placeholder="Email"
-            />
-
-            <input
-              id="loginPassword"
-              type="password"
-              placeholder="Password"
-            />
-
-            <button
-              onClick={handleLogin}
-            >
-              Login
-            </button>
-
-            <p
-              onClick={() =>
-                setIsLogin(false)
-              }
-            >
-              New user? Signup
+            <p className="auth-tagline">
+              Eat well. Feel well. Live beautifully.
             </p>
 
-          </>
-
-        ) : (
-
-          <>
-
-            <h2>
-              Signup
-            </h2>
-
-            <input
-              id="signupName"
-              placeholder="Name"
-            />
-
-            <input
-              id="signupEmail"
-              placeholder="Email"
-            />
-
-            <input
-              id="signupPassword"
-              type="password"
-              placeholder="Password"
-            />
-
-            <button
-              onClick={handleSignup}
-            >
-              Signup
-            </button>
-
-            <p
-              onClick={() =>
-                setIsLogin(true)
-              }
-            >
-              Already have account? Login
-            </p>
-
-          </>
-
-        )}
-
-      </div>
-
-    );
-
-  }
-
-  // 🎯 MAIN UI
-  return (
-
-    <div className="app-viewport">
-
-      <div className="overlay"></div>
-
-      <div className="container">
-
-        <header className="header">
-
-          <h1 className="logo">
-            Rasoi<span>.ai</span>
-          </h1>
-
-          <p>
-            Hi {userName || "Chef"} 👋,
-            what’s in your mind today?
-          </p>
-
-          <button onClick={logout}>
-            Logout
-          </button>
-
-          <p className="subtitle">
-            Modern Cooking Powered by Intelligence
-          </p>
-
-        </header>
-
-        {/* SEARCH */}
-        <div className="search-container">
-
-          <div className="search-box">
-
-            <input
-              type="text"
-              placeholder="Search recipes..."
-              value={query}
-              onChange={(e) =>
-                setQuery(e.target.value)
-              }
-              onKeyDown={(e) =>
-                e.key === "Enter" &&
-                handleSearch()
-              }
-            />
-
-            <button
-              className="voice-btn"
-              onClick={startVoice}
-            >
-              🎤
-            </button>
-
-            <button
-              className="search-btn"
-              onClick={handleSearch}
-            >
-              Find Recipes
-            </button>
-
-            <button
-              className="filter-open-btn"
-              onClick={() =>
-                setShowFilter(true)
-              }
-            >
-              Filter
-            </button>
-
-            <button
-              className="add-btn"
-              onClick={() =>
-                setShowForm(true)
-              }
-            >
-              Add Recipe
-            </button>
-
+            <div className="auth-food-decoration">
+              <span>Fresh ingredients</span>
+              <span>Thoughtful recipes</span>
+              <span>Better everyday choices</span>
+            </div>
           </div>
-
         </div>
 
-         {/* RECIPES */}
-<div className="recipes-grid">
-
-  {results.map((recipe, index) => (
-
-    <div
-      className={`recipe-card ${
-        expandedIndex === index
-          ? "expanded"
-          : ""
-      }`}
-      key={index}
-    >
-
-      <div className="card-header">
-
-        <h2>{recipe.name}</h2>
-
-        <span className="calorie-badge">
-          {recipe.calories} kcal
-        </span>
-
-      </div>
-
-      <div className="tag-container">
-
-        {recipe.tags?.map((tag, i) => (
-
-          <span
-            key={i}
-            className="tag"
-          >
-            #{tag}
-          </span>
-
-        ))}
-
-      </div>
-
-      <div className="card-content">
-
-        <section>
-
-          <h3>Ingredients</h3>
-
-          <ul>
-
-            {recipe.ingredients.map((ing, i) => (
-
-              <li key={i}>
-                {ing}
-              </li>
-
-            ))}
-
-          </ul>
-
-        </section>
-
-        <section>
-
-          <h3>Instructions</h3>
-
-          {expandedIndex === index ? (
-
-            <ol>
-
-              {recipe.steps.map((step, i) => (
-
-                <li key={i}>
-                  {step}
-                </li>
-
-              ))}
-
-            </ol>
-
-          ) : (
-
-            <p>
-              {recipe.steps[0]}...
-            </p>
-
-          )}
-
-        </section>
-
-      </div>
-
-      <button
-        onClick={() =>
-          setExpandedIndex(
-            expandedIndex === index
-              ? null
-              : index
-          )
-        }
-      >
-
-        {expandedIndex === index
-          ? "Show Less"
-          : "View Full Recipe"}
-
-      </button>
-
-    </div>
-
-  ))}
-
-</div>
-
-        
-
-        {/* FILTER POPUP */}
-        {/* FILTER POPUP */}
-{/* FILTER POPUP */}
-{showFilter && (
-
-  <div className="filter-popup">
-
-    <h2>Select Filters</h2>
-
-    {/* FIRST 5 FILTERS */}
-    <label>
-      <input
-        type="checkbox"
-        value="healthy"
-        onChange={(e) =>
-          handleCheckboxChange(e.target.value)
-        }
-      />
-      healthy
-    </label>
-
-    <label>
-      <input
-        type="checkbox"
-        value="protein"
-        onChange={(e) =>
-          handleCheckboxChange(e.target.value)
-        }
-      />
-      protein
-    </label>
-
-    <label>
-      <input
-        type="checkbox"
-        value="breakfast"
-        onChange={(e) =>
-          handleCheckboxChange(e.target.value)
-        }
-      />
-      breakfast
-    </label>
-
-    <label>
-      <input
-        type="checkbox"
-        value="easy"
-        onChange={(e) =>
-          handleCheckboxChange(e.target.value)
-        }
-      />
-      easy
-    </label>
-
-    <label>
-      <input
-        type="checkbox"
-        value="keto"
-        onChange={(e) =>
-          handleCheckboxChange(e.target.value)
-        }
-      />
-      keto
-    </label>
-
-    {/* SHOW MORE BUTTON */}
-    <button
-      className="more-btn"
-      onClick={() =>
-        setShowMore(!showMore)
-      }
-    >
-      {showMore ? "Show Less" : "More Filters"}
-    </button>
-
-    {/* EXTRA FILTERS */}
-    {showMore && (
-      <div className="extra-filters">
-
-        <label>
-          <input
-            type="checkbox"
-            value="vegetarian"
-            onChange={(e) =>
-              handleCheckboxChange(e.target.value)
-            }
-          />
-          vegetarian
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            value="low carb"
-            onChange={(e) =>
-              handleCheckboxChange(e.target.value)
-            }
-          />
-          low carb
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            value="vegan"
-            onChange={(e) =>
-              handleCheckboxChange(e.target.value)
-            }
-          />
-          vegan
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            value="snacks"
-            onChange={(e) =>
-              handleCheckboxChange(e.target.value)
-            }
-          />
-          snacks
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            value="weight loss"
-            onChange={(e) =>
-              handleCheckboxChange(e.target.value)
-            }
-          />
-          weight loss
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            value="lunch"
-            onChange={(e) =>
-              handleCheckboxChange(e.target.value)
-            }
-          />
-          lunch
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            value="fiber"
-            onChange={(e) =>
-              handleCheckboxChange(e.target.value)
-            }
-          />
-          fiber
-        </label>
-
-      </div>
-    )}
-
-    {/* APPLY BUTTON */}
-    <button
-      className="apply-btn"
-      onClick={applyFilter}
-    >
-      Apply
-    </button>
-
-    {/* CANCEL */}
-    <button
-      className="cancel-btn"
-      onClick={() =>
-        setShowFilter(false)
-      }
-    >
-      Cancel
-    </button>
-
-  </div>
-
-)}
-        
-        {/* ADD FORM */}
-        {showForm && (
-
-          <div className="add-recipe-form">
+        <div className="auth-form-panel">
+          <div className="auth-form-wrapper">
+            <p className="eyebrow">WELCOME TO NUTRIWISE</p>
 
             <h2>
-              Add Recipe
+              {isLogin ? "Welcome back." : "Create your account."}
             </h2>
 
-            <input
-              placeholder="Title"
-              value={title}
-              onChange={(e) =>
-                setTitle(
-                  e.target.value
-                )
-              }
-            />
+            <p className="auth-description">
+              {isLogin
+                ? "Sign in to discover recipes and make every meal count."
+                : "Join us and start discovering a better way to eat."}
+            </p>
 
-            <input
-              placeholder="Keyword"
-              value={keyword}
-              onChange={(e) =>
-                setKeyword(
-                  e.target.value
-                )
-              }
-            />
+            {isLogin ? (
+              <div className="auth-fields">
+                <label htmlFor="loginEmail">Email address</label>
+                <input
+                  id="loginEmail"
+                  type="email"
+                  placeholder="Enter your email"
+                />
 
-            <textarea
-              placeholder="Ingredients"
-              value={ingredients}
-              onChange={(e) =>
-                setIngredients(
-                  e.target.value
-                )
-              }
-            />
+                <label htmlFor="loginPassword">Password</label>
+                <input
+                  id="loginPassword"
+                  type="password"
+                  placeholder="Enter your password"
+                />
 
-            <textarea
-              placeholder="Instructions"
-              value={instructions}
-              onChange={(e) =>
-                setInstructions(
-                  e.target.value
-                )
-              }
-            />
+                <button className="auth-submit-btn" onClick={handleLogin}>
+                  Sign In
+                </button>
 
-            <button
-              onClick={addRecipe}
-            >
-              Submit
+                <p className="auth-switch">
+                  Don't have an account?{" "}
+                  <span onClick={() => setIsLogin(false)}>Sign up</span>
+                </p>
+              </div>
+            ) : (
+              <div className="auth-fields">
+                <label htmlFor="signupName">Full name</label>
+                <input
+                  id="signupName"
+                  type="text"
+                  placeholder="Enter your name"
+                />
+
+                <label htmlFor="signupEmail">Email address</label>
+                <input
+                  id="signupEmail"
+                  type="email"
+                  placeholder="Enter your email"
+                />
+
+                <label htmlFor="signupPassword">Password</label>
+                <input
+                  id="signupPassword"
+                  type="password"
+                  placeholder="Create a password"
+                />
+
+                <button className="auth-submit-btn" onClick={handleSignup}>
+                  Create Account
+                </button>
+
+                <p className="auth-switch">
+                  Already have an account?{" "}
+                  <span onClick={() => setIsLogin(true)}>Sign in</span>
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Main application
+  return (
+    <div className="app-viewport">
+      <div className="app-container">
+
+        {/* Navigation */}
+        <header className="main-navbar">
+          <a href="/" className="logo">
+            NutriWise<span>.ai</span>
+          </a>
+
+          <nav className="nav-links">
+            <a href="#home">Home</a>
+            <a href="#discover">Discover</a>
+            <a href="#about">About</a>
+          </nav>
+
+          <div className="nav-user">
+            <span className="nav-greeting">
+              Hi, {userName || "Chef"}
+            </span>
+            <button className="logout-btn" onClick={logout}>
+              Logout
             </button>
+          </div>
+        </header>
+
+        {/* Hero section */}
+        <section className="hero-section" id="home">
+          <div className="hero-content">
+            <p className="eyebrow">A LITTLE MORE GOODNESS, EVERY DAY</p>
+
+            <h1>
+              Make every meal
+              <br />
+              <span>feel a little better.</span>
+            </h1>
+
+            <p className="hero-description">
+              Discover nourishing recipes, explore ingredients and find
+              inspiration for your everyday cooking.
+            </p>
 
             <button
+              className="hero-cta"
               onClick={() =>
-                setShowForm(false)
+                document.getElementById("recipe-search")?.scrollIntoView({
+                  behavior: "smooth"
+                })
               }
             >
-              Cancel
+              Explore Recipes
             </button>
-
           </div>
 
-        )}
+          <div className="hero-image-area">
+            <div className="hero-image-placeholder">
+              <span>Fresh food. Simple choices.</span>
+            </div>
+          </div>
+        </section>
+        {/* Why NutriWise */}
+<section className="why-nutriwise">
+  <p className="eyebrow">A BETTER WAY TO EAT</p>
+  <h2>Good food. Simple choices.</h2>
+  <p className="why-description">
+    Eating well doesn't have to be complicated. Find ideas and inspiration
+    to make everyday meals more enjoyable.
+  </p>
 
-      </div>
-    <Chatbot />
+  <div className="why-grid">
+    <div className="why-item">
+      <h3>Discover</h3>
+      <p>Find recipes that match your taste and ingredients.</p>
     </div>
 
-  );
+    <div className="why-item">
+      <h3>Eat Mindfully</h3>
+      <p>Explore simple ways to make thoughtful food choices.</p>
+    </div>
 
+    <div className="why-item">
+      <h3>Share</h3>
+      <p>Bring your own recipes and cooking ideas to the community.</p>
+    </div>
+  </div>
+</section>
+        {/* Recipe discovery */}
+        <section className="discover-section" id="discover">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">FIND YOUR NEXT FAVOURITE</p>
+              <h2>What are you craving today?</h2>
+              <p>
+                Search recipes from our collection and discover something
+                delicious.
+              </p>
+            </div>
+          </div>
+
+          <div className="search-container" id="recipe-search">
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="Search recipes, ingredients or meals..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleSearch()
+                }
+              />
+
+              
+<button
+  className="voice-btn"
+  onClick={startVoice}
+  title="Voice search"
+  aria-label="Voice search"
+>
+  <svg
+    width="21"
+    height="21"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="9" y="2" width="6" height="12" rx="3" />
+    <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
+    <path d="M12 19v3" />
+    <path d="M8 22h8" />
+  </svg>
+</button>
+
+
+              <button className="search-btn" onClick={() => handleSearch()}>
+                Search
+              </button>
+
+              <button
+                className="filter-open-btn"
+                onClick={() => setShowFilter(true)}
+              >
+                Filters
+              </button>
+
+              <button
+                className="add-btn"
+                onClick={() => setShowForm(true)}
+              >
+                + Add Recipe
+              </button>
+            </div>
+          </div>
+
+          {/* Recipe cards */}
+          <div className="recipes-grid">
+            {results.length > 0 ? (
+              results.map((recipe, index) => (
+                <article
+                  className={`recipe-card ${
+                    expandedIndex === index ? "expanded" : ""
+                  }`}
+                  key={`${recipe.name}-${index}`}
+                >
+                  <div className="recipe-card-image">
+                    <span>NutriWise Recipe</span>
+                  </div>
+
+                  <div className="recipe-card-body">
+                    <div className="card-header">
+                      <h3>{recipe.name}</h3>
+                      <span className="calorie-badge">
+                        {recipe.calories}
+                      </span>
+                    </div>
+
+                    <div className="tag-container">
+                      {recipe.tags?.map((tag, i) => (
+                        <span className="tag" key={i}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <section className="recipe-details">
+                      <h4>Ingredients</h4>
+                      <ul>
+                        {recipe.ingredients?.map((ingredient, i) => (
+                          <li key={i}>{ingredient}</li>
+                        ))}
+                      </ul>
+                    </section>
+
+                    <section className="recipe-details">
+                      <h4>Instructions</h4>
+
+                      {expandedIndex === index ? (
+                        <ol>
+                          {recipe.steps?.map((step, i) => (
+                            <li key={i}>{step}</li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <p>
+                          {recipe.steps?.[0] || "View this recipe for details."}
+                          {recipe.steps?.length > 1 ? "..." : ""}
+                        </p>
+                      )}
+                    </section>
+
+                    <button
+                      className="view-recipe-btn"
+                      onClick={() =>
+                        setExpandedIndex(
+                          expandedIndex === index ? null : index
+                        )
+                      }
+                    >
+                      {expandedIndex === index
+                        ? "Show Less"
+                        : "View Full Recipe"}
+                    </button>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="empty-recipes">
+                <span className="empty-icon">✳</span>
+                <h3>Your next favourite meal is waiting.</h3>
+                <p>
+                  Search for a recipe or ingredient to get started.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Filter popup */}
+        {showFilter && (
+          <div className="modal-backdrop">
+            <div className="filter-popup">
+              <div className="modal-heading">
+                <div>
+                  <p className="eyebrow">PERSONALISE YOUR SEARCH</p>
+                  <h2>Explore by preference</h2>
+                </div>
+                <button
+                  className="modal-close"
+                  onClick={() => setShowFilter(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="filter-options">
+                {[
+                  "healthy",
+                  "protein",
+                  "breakfast",
+                  "easy",
+                  "keto"
+                ].map((filter) => (
+                  <label key={filter}>
+                    <input
+                      type="checkbox"
+                      checked={selectedFilters.includes(filter)}
+                      onChange={() => handleCheckboxChange(filter)}
+                    />
+                    {filter}
+                  </label>
+                ))}
+              </div>
+
+              <button
+                className="more-btn"
+                onClick={() => setShowMore(!showMore)}
+              >
+                {showMore ? "Show Less" : "More Filters"}
+              </button>
+
+              {showMore && (
+                <div className="filter-options extra-filters">
+                  {[
+                    "vegetarian",
+                    "low carb",
+                    "vegan",
+                    "snacks",
+                    "weight loss",
+                    "lunch",
+                    "fiber"
+                  ].map((filter) => (
+                    <label key={filter}>
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.includes(filter)}
+                        onChange={() => handleCheckboxChange(filter)}
+                      />
+                      {filter}
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              <div className="modal-actions">
+                <button className="apply-btn" onClick={applyFilter}>
+                  Apply Filters
+                </button>
+
+                <button
+                  className="cancel-btn"
+                  onClick={() => setShowFilter(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add recipe form */}
+        {showForm && (
+          <div className="modal-backdrop">
+            <div className="add-recipe-form">
+              <div className="modal-heading">
+                <div>
+                  <p className="eyebrow">SHARE SOMETHING DELICIOUS</p>
+                  <h2>Add your recipe</h2>
+                </div>
+
+                <button
+                  className="modal-close"
+                  onClick={() => setShowForm(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <label>Recipe title</label>
+              <input
+                placeholder="e.g. Homemade vegetable soup"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+
+              <label>Keywords</label>
+              <input
+                placeholder="e.g. healthy, lunch, vegetarian"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+              />
+
+              <label>Ingredients</label>
+              <textarea
+                placeholder="Add ingredients separated by commas..."
+                value={ingredients}
+                onChange={(e) => setIngredients(e.target.value)}
+              />
+
+              <label>Instructions</label>
+              <textarea
+                placeholder="Write the recipe steps..."
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+              />
+
+              <div className="modal-actions">
+                <button className="apply-btn" onClick={addRecipe}>
+                  Submit Recipe
+                </button>
+
+                <button
+                  className="cancel-btn"
+                  onClick={() => setShowForm(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* About */}
+        {/* About section */}
+<section className="about-section" id="about">
+  <p className="eyebrow">GET TO KNOW US</p>
+  <h2>About NutriWise</h2>
+
+  <p className="about-intro">
+    NutriWise makes discovering and sharing everyday food inspiration
+    simple, enjoyable and accessible.
+  </p>
+
+  <div className="about-content">
+    <div>
+      <h3>Our Mission</h3>
+      <p>
+        We believe better food choices begin with simple ideas.
+        Our goal is to make everyday cooking a little easier and healthier.
+      </p>
+    </div>
+
+    <div>
+      <h3>What We Offer</h3>
+      <p>
+        Discover recipes, search by ingredients, explore food suggestions
+        and share your own creations with others.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer className="app-footer">
+  <a href="/" className="logo">
+    NutriWise<span>.ai</span>
+  </a>
+
+  <p>Eat well. Feel well. Live beautifully.</p>
+  <span>Made for better everyday choices.</span>
+</footer>
+      </div>
+
+      <Chatbot />
+    </div>
+  );
 }
 
 export default App;

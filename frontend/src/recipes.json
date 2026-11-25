@@ -205,6 +205,92 @@
     ],
     "calories": 240
   }
-  
+  ,
+
+  {
+    "name": "Papaya Smoothie",
+    "tags": ["papaya", "breakfast", "healthy", "smoothie", "vegan"],
+    "ingredients": ["1 cup ripe papaya", "1 banana", "1 cup milk or almond milk", "1 tsp honey"],
+    "steps": ["Peel and chop the papaya.", "Add papaya, banana and milk to a blender.", "Blend until smooth.", "Add honey if desired and serve chilled."],
+    "calories": 180
+  },
+  {
+    "name": "Papaya Fruit Salad",
+    "tags": ["papaya", "fruit", "salad", "healthy", "snacks"],
+    "ingredients": ["1 cup papaya cubes", "1 apple", "1 banana", "1/2 cup pomegranate seeds", "Lemon juice"],
+    "steps": ["Wash and chop all fruits.", "Add them to a bowl.", "Drizzle with lemon juice.", "Mix gently and serve fresh."],
+    "calories": 160
+  },
+  {
+    "name": "Papaya Chia Pudding",
+    "tags": ["papaya", "breakfast", "healthy", "fiber", "dessert"],
+    "ingredients": ["1/2 cup papaya puree", "3 tbsp chia seeds", "1 cup almond milk", "1 tsp honey"],
+    "steps": ["Mix chia seeds and almond milk.", "Refrigerate for at least 4 hours.", "Add papaya puree and honey.", "Serve chilled."],
+    "calories": 210
+  },
+  {
+    "name": "Vegetable Poha",
+    "tags": ["breakfast", "indian", "vegetarian", "easy"],
+    "ingredients": ["1 cup flattened rice", "1/2 cup peas", "1 onion", "Mustard seeds", "Curry leaves", "Turmeric"],
+    "steps": ["Rinse flattened rice and drain.", "Heat oil and add mustard seeds and curry leaves.", "Add onion and peas.", "Mix in turmeric and flattened rice.", "Cook for a few minutes and serve."],
+    "calories": 230
+  },
+  {
+    "name": "Ragi Dosa",
+    "tags": ["breakfast", "indian", "healthy", "gluten-free"],
+    "ingredients": ["1 cup ragi flour", "1/4 cup rice flour", "1 onion", "Cumin seeds", "Water", "Salt"],
+    "steps": ["Mix the flours with water and salt.", "Add chopped onion and cumin.", "Pour batter onto a hot pan.", "Cook until crisp on both sides."],
+    "calories": 170
+  },
+  {
+    "name": "Palak Paneer",
+    "tags": ["lunch", "dinner", "indian", "protein", "vegetarian"],
+    "ingredients": ["200g paneer", "2 cups spinach", "1 onion", "1 tomato", "Garlic", "Garam masala"],
+    "steps": ["Blanch spinach and blend into a puree.", "Sauté onion, tomato and garlic.", "Add spinach puree and spices.", "Add paneer cubes and simmer.", "Serve warm."],
+    "calories": 280
+  },
+  {
+    "name": "Vegetable Pulao",
+    "tags": ["lunch", "dinner", "indian", "vegetarian"],
+    "ingredients": ["1 cup basmati rice", "1 cup mixed vegetables", "1 onion", "Whole spices", "Ginger garlic paste"],
+    "steps": ["Wash and soak rice.", "Sauté onion, spices and vegetables.", "Add rice and water.", "Cover and cook until rice is tender."],
+    "calories": 290
+  },
+  {
+    "name": "Besan Chilla",
+    "tags": ["breakfast", "protein", "indian", "vegetarian", "easy"],
+    "ingredients": ["1 cup gram flour", "1 onion", "1 tomato", "Green chilli", "Coriander", "Water"],
+    "steps": ["Mix gram flour with water to make a smooth batter.", "Add chopped vegetables and spices.", "Pour onto a heated pan.", "Cook both sides until golden."],
+    "calories": 180
+  },
+  {
+    "name": "Cucumber Mint Raita",
+    "tags": ["side dish", "healthy", "vegetarian", "cooling"],
+    "ingredients": ["1 cup yogurt", "1 cucumber", "Mint leaves", "Roasted cumin powder", "Salt"],
+    "steps": ["Grate the cucumber.", "Whisk the yogurt.", "Mix cucumber, mint and cumin into the yogurt.", "Season with salt and serve chilled."],
+    "calories": 90
+  },
+  {
+    "name": "Roasted Makhana",
+    "tags": ["snacks", "healthy", "low fat", "vegetarian"],
+    "ingredients": ["2 cups makhana", "1 tsp ghee", "Black pepper", "Turmeric", "Salt"],
+    "steps": ["Heat ghee in a pan.", "Add makhana and roast on low heat.", "Add turmeric, pepper and salt.", "Roast until crunchy."],
+    "calories": 120
+  },
+  {
+    "name": "Tomato Soup",
+    "tags": ["soup", "healthy", "dinner", "vegetarian"],
+    "ingredients": ["4 tomatoes", "1 onion", "2 garlic cloves", "Black pepper", "Salt"],
+    "steps": ["Chop tomatoes and onion.", "Cook with garlic until soft.", "Blend until smooth.", "Heat again, season and serve warm."],
+    "calories": 100
+  },
+  {
+    "name": "Grilled Vegetable Sandwich",
+    "tags": ["breakfast", "snacks", "vegetarian", "easy"],
+    "ingredients": ["4 slices whole wheat bread", "1 tomato", "1 cucumber", "1 onion", "Bell pepper", "Mint chutney"],
+    "steps": ["Slice all vegetables.", "Spread mint chutney on bread.", "Add vegetables between the slices.", "Grill until crisp and serve."],
+    "calories": 220
+  }
+
 
 ]
